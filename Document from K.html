@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starbucks India | Managerial Economics Simulation</title>
+<style>
+:root{--green:#006241;--dark:#12372a;--mint:#e8f3ed;--cream:#f7f5ef;--ink:#202923;--muted:#65736b;--line:#dce5df;--gold:#c49a43;--white:#fff;--red:#b84c45}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.5 Arial,Helvetica,sans-serif}
+header{background:linear-gradient(120deg,#063d2d,#08734d);color:white;padding:28px max(20px,calc((100% - 1180px)/2))}
+header .eyebrow{letter-spacing:2px;text-transform:uppercase;font-size:11px;opacity:.8;font-weight:bold}
+header h1{margin:7px 0;font-size:clamp(25px,4vw,38px)}header p{margin:0;max-width:760px;color:#e4f1e9}
+.wrap{max-width:1180px;margin:22px auto;padding:0 18px}.notice{background:#fff8e8;border:1px solid #ead7a8;padding:12px 15px;border-radius:12px;color:#5e4b20;margin-bottom:18px}
+.topgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric,.panel,.step{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 3px 12px #173b2510}
+.metric{padding:15px}.metric small{display:block;color:var(--muted);font-weight:bold}.metric strong{font-size:25px;color:var(--green)}
+.layout{display:grid;grid-template-columns:255px 1fr;gap:18px;margin-top:18px}.sidebar{align-self:start;position:sticky;top:12px;background:white;border:1px solid var(--line);border-radius:15px;padding:12px}
+.sidebar h3{margin:6px 8px 10px;color:var(--dark)}.nav{display:block;width:100%;text-align:left;border:0;background:white;padding:9px 10px;border-radius:9px;color:#34453c;cursor:pointer;margin:2px 0;font-size:13px}.nav.active,.nav:hover{background:var(--mint);color:var(--green);font-weight:bold}
+.content{min-width:0}.step{scroll-margin-top:18px;padding:20px;margin-bottom:15px}.step h2{margin:0 0 4px;color:var(--dark);font-size:21px}.sub{color:var(--muted);margin:0 0 15px}.stepnum{font-size:11px;color:var(--green);font-weight:bold;letter-spacing:1.3px;text-transform:uppercase}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.control{background:#f8faf8;border:1px solid var(--line);border-radius:11px;padding:12px}.control label{display:flex;justify-content:space-between;gap:10px;font-weight:bold;font-size:13px}.control output{color:var(--green)}input[type=range]{width:100%;accent-color:var(--green);margin-top:12px}input[type=number],select{width:100%;padding:9px;border:1px solid #cbd8cf;border-radius:8px;background:white;margin-top:7px}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.result{background:var(--mint);padding:12px;border-radius:10px}.result small{display:block;color:#52665b}.result b{font-size:19px;color:var(--green)}
+.explain{background:#f5f8f5;border-left:4px solid var(--gold);padding:11px 13px;border-radius:5px;margin-top:14px;color:#435148}
+button.action{background:var(--green);color:white;border:0;padding:10px 14px;border-radius:9px;font-weight:bold;cursor:pointer}button.secondary{background:#edf4ef;color:var(--green);border:1px solid #cbded2}
+button:focus,input:focus,select:focus{outline:2px solid #9bc9b0;outline-offset:2px}
+canvas{width:100%;height:220px;background:#fbfcfb;border:1px solid var(--line);border-radius:10px;margin-top:12px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{background:#f0f6f2;color:var(--dark)}
+.hidden{display:none!important}.pill{display:inline-block;background:#e9f2ec;color:var(--green);padding:4px 9px;border-radius:30px;font-size:11px;font-weight:bold}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:24px}
+.logrow{padding:10px 0;border-bottom:1px solid var(--line)}.logrow:last-child{border:0}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{position:static}.nav{display:inline-block;width:auto}.topgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.controls,.results{grid-template-columns:1fr}.step{padding:15px}.wrap{padding:0 12px}}
+
+/* Premium Starbucks-inspired interface */
+body{background:#f5f2e9;color:#1e3932;font-family:"Trebuchet MS",Arial,sans-serif}
+.starbucks-header{background:linear-gradient(135deg,#003b2b,#006241,#16845c);color:#fff;text-align:center;padding:38px 20px;position:relative;overflow:hidden}
+.starbucks-header:after{content:"☕";position:absolute;font-size:180px;opacity:.07;right:7%;bottom:-55px;pointer-events:none}
+.brand-logo{width:82px;height:82px;background:#fff;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 20px #0003}
+.brand-logo img{width:62px;height:62px;object-fit:contain}
+.brand-label{letter-spacing:5px;font-size:12px;font-weight:bold;color:#d4e7d9}
+.starbucks-header h1{font-size:clamp(26px,4vw,42px);margin:12px 0;letter-spacing:.5px}
+.starbucks-header p{font-size:16px;color:#e1eee5}
+.header-tags{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:21px}
+.header-tags span{border:1px solid #ffffff70;padding:7px 13px;border-radius:30px;font-size:10px;letter-spacing:1px}
+.progress-container{background:#fff;padding:14px max(20px,calc((100% - 1180px)/2));border-bottom:1px solid #e5e8df}
+.progress-heading{display:flex;justify-content:space-between;font-size:11px;font-weight:bold;color:#006241;letter-spacing:1px;margin-bottom:8px}
+.progress-track{height:7px;background:#e7eee7;border-radius:20px;overflow:hidden}
+#progressBar{width:100%;height:100%;background:linear-gradient(90deg,#006241,#35a675);border-radius:20px;transition:width .4s}
+.wrap{max-width:1320px}
+.metric,.panel,.step{border-color:#e8e6dd;box-shadow:0 5px 20px #00000009}
+.metric{border-top:4px solid #006241;transition:transform .2s,box-shadow .2s}
+.metric:hover{transform:translateY(-4px);box-shadow:0 10px 25px #00624118}
+.metric strong{font-size:27px}
+.sidebar{box-shadow:0 5px 20px #00000009;border-color:#e6e4da}
+.sidebar h3{letter-spacing:1px;padding-bottom:10px;border-bottom:2px solid #e8eee7}
+.nav{border-radius:8px;padding:10px;transition:all .2s}
+.nav:hover{transform:translateX(3px);background:#e6f1e9}
+.nav.active{background:#006241;color:white;box-shadow:0 3px 10px #00624135}
+.step{border-radius:16px;padding:27px;animation:starAppear .3s ease}
+.step h2{font-size:23px;border-bottom:2px solid #e7eee7;padding-bottom:12px}
+.control{border:1px solid #e4e9e2;background:#f8faf6;border-radius:12px;transition:border .2s}
+.control:hover{border-color:#8bb49b}
+input[type=range]{accent-color:#00704a;cursor:pointer}
+.result{border:1px solid #dce9df;border-radius:12px;background:linear-gradient(135deg,#eff7f0,#e2eee4);transition:transform .2s}
+.result:hover{transform:scale(1.015)}
+button.action{border-radius:25px;padding:11px 21px;background:linear-gradient(135deg,#006241,#00845a);box-shadow:0 4px 12px #00624125;transition:all .2s}
+button.action:hover{transform:translateY(-2px);box-shadow:0 7px 18px #00624135}
+.note{border-radius:10px;background:#fff9e9;border-left:5px solid #c49a43;line-height:1.8}
+th{background:#006241;color:#fff}
+tr:nth-child(even){background:#f6f9f5}
+canvas{border-radius:12px;background:#fbfcf9;border:1px solid #e5eae3}
+footer{background:#12372a;color:#e2eee5;padding:28px}
+@keyframes starAppear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.step{padding:18px}.brand-logo{width:68px;height:68px}.progress-container{padding:13px 18px}}
+
+
+/* LUXURY EDITION — premium editorial coffee-house aesthetic */
+:root{
+ --green:#006241;--dark:#092f25;--mint:#e9efe8;--cream:#f4f0e6;
+ --ink:#172c25;--muted:#778078;--line:#ded8c9;--gold:#b99a5b;
+ --white:#fffdf8;--red:#a34f43;
+}
+html{scroll-behavior:smooth}
+body{
+ background:#f2eee4!important;color:#1c3028!important;
+ font-family:"Avenir Next",Avenir,"Trebuchet MS",sans-serif!important;
+ letter-spacing:.08px;
+}
+.starbucks-header{
+ min-height:330px;padding:48px 20px 42px!important;
+ background:
+  radial-gradient(ellipse at 50% 115%,#1d6047 0%,transparent 54%),
+  linear-gradient(125deg,#061f19 0%,#073b2c 52%,#0b4a36 100%)!important;
+ border-bottom:1px solid #b99a5b88;
+}
+.starbucks-header:before{
+ content:"";position:absolute;inset:12px;border:1px solid #c6aa6a55;
+ pointer-events:none;
+}
+.starbucks-header:after{
+ content:"";position:absolute;right:5%;bottom:-90px;font-size:290px;
+ opacity:.045;filter:grayscale(1);transform:rotate(-12deg);
+}
+.brand-logo{
+ width:88px;height:88px;margin-bottom:19px!important;
+ border:1px solid #c3a76c;background:#f8f5ec!important;
+ box-shadow:0 0 0 6px #ffffff0b,0 12px 34px #0005!important;
+}
+.brand-logo img{width:66px;height:66px}
+.brand-label{
+ font-family:Georgia,serif!important;font-size:12px!important;
+ letter-spacing:6px!important;color:#d9c18c!important;
+}
+.starbucks-header h1{
+ font-family:Georgia,"Times New Roman",serif!important;
+ font-weight:400!important;font-size:clamp(34px,5vw,56px)!important;
+ letter-spacing:.2px!important;line-height:1.12;
+ margin:15px 0 10px!important;
+}
+.starbucks-header p{
+ font-family:Georgia,serif!important;font-style:italic;
+ color:#e4e0d4!important;font-size:17px!important;letter-spacing:.3px;
+}
+.header-tags{margin-top:27px!important;gap:10px!important}
+.header-tags span{
+ border:1px solid #b99a5b88!important;color:#e6d7b2;
+ padding:8px 14px!important;border-radius:2px!important;
+ font-size:9px!important;letter-spacing:1.7px!important;
+ background:#ffffff08;
+}
+.progress-container{
+ background:#fbf9f3!important;border-bottom:1px solid #d8cfbd!important;
+ padding-top:17px!important;padding-bottom:17px!important;
+}
+.progress-heading{
+ color:#52695c!important;letter-spacing:1.8px!important;
+ font-size:10px!important;
+}
+.progress-track{height:5px!important;background:#e5e0d4!important;border-radius:0!important}
+#progressBar{background:linear-gradient(90deg,#9b7b43,#d4bd83)!important;border-radius:0!important}
+.wrap{max-width:1360px!important;margin-top:28px!important}
+.notice{
+ background:#f8f2e4!important;border:1px solid #dfcfaa!important;
+ border-left:3px solid #b99a5b!important;border-radius:2px!important;
+ padding:15px 19px!important;color:#5c5546!important;
+}
+.topgrid{gap:15px!important}
+.metric{
+ background:#fbfaf5!important;border:1px solid #e3ddcf!important;
+ border-top:2px solid #b99a5b!important;border-radius:3px!important;
+ box-shadow:0 5px 18px #332a1608!important;padding:19px 20px!important;
+}
+.metric small{
+ color:#7d796d!important;text-transform:uppercase;
+ letter-spacing:1.4px;font-size:9px!important;
+}
+.metric strong{
+ color:#123d2e!important;font-family:Georgia,serif!important;
+ font-size:29px!important;font-weight:400!important;
+}
+.layout{grid-template-columns:265px minmax(0,1fr)!important;gap:22px!important}
+.sidebar{
+ background:#0b3025!important;border:1px solid #b99a5b55!important;
+ border-radius:3px!important;padding:18px 13px!important;
+ box-shadow:0 12px 28px #12281d16!important;
+}
+.sidebar h3{
+ color:#e8ddc3!important;border-bottom:1px solid #b99a5b66!important;
+ font-family:Georgia,serif!important;font-size:19px!important;
+ font-weight:400;letter-spacing:.2px!important;padding:3px 8px 15px!important;
+}
+.nav{
+ background:transparent!important;color:#c8d2c8!important;
+ border-radius:2px!important;padding:11px 12px!important;
+ font-size:12px!important;letter-spacing:.2px;
+ border-left:2px solid transparent!important;
+ transition:all .2s ease!important;
+}
+.nav:hover{background:#ffffff0b!important;color:#fff!important;transform:none!important}
+.nav.active{
+ background:#ffffff12!important;color:#f2dfb1!important;
+ border-left:2px solid #c3a56b!important;box-shadow:none!important;
+}
+.step{
+ background:#fbfaf5!important;border:1px solid #e2dccf!important;
+ border-radius:3px!important;padding:30px!important;
+ box-shadow:0 8px 28px #2b261708!important;
+ animation:starAppear .32s ease;
+}
+.stepnum{
+ color:#9a7a43!important;letter-spacing:2px!important;
+ font-size:9px!important;
+}
+.step h2{
+ color:#153d2e!important;font-family:Georgia,"Times New Roman",serif!important;
+ font-weight:400!important;font-size:27px!important;
+ border-bottom:1px solid #d9cfbb!important;padding-bottom:16px!important;
+ letter-spacing:.1px;
+}
+.sub{color:#77776d!important;font-size:13px!important;line-height:1.75}
+.controls{gap:14px!important}
+.control{
+ background:#f5f3ec!important;border:1px solid #e5dfd1!important;
+ border-radius:2px!important;padding:15px!important;
+}
+.control:hover{border-color:#b99a5b!important}
+.control label{color:#344a3e!important;font-size:12px!important}
+.control output{color:#8b6d37!important;font-family:Georgia,serif;font-size:15px}
+input[type=range]{accent-color:#9b7b43!important}
+input[type=number],select{
+ border:1px solid #d7cfbd!important;border-radius:2px!important;
+ background:#fffdf8!important;padding:10px!important;
+}
+.results{gap:12px!important}
+.result{
+ background:#eef1e9!important;border:1px solid #dfe4d8!important;
+ border-radius:2px!important;padding:15px!important;
+}
+.result small{
+ color:#70786d!important;text-transform:uppercase;
+ letter-spacing:1px;font-size:9px!important;
+}
+.result b{
+ color:#164330!important;font-family:Georgia,serif!important;
+ font-size:22px!important;font-weight:400!important;
+}
+.explain,.note{
+ background:#f5f0e4!important;border-left:3px solid #b99a5b!important;
+ border-radius:1px!important;padding:15px 17px!important;
+ color:#5d5b50!important;font-size:12px!important;line-height:1.8!important;
+}
+button.action{
+ background:#0b4935!important;border:1px solid #b99a5b!important;
+ color:#f8f3e7!important;border-radius:2px!important;
+ padding:12px 21px!important;letter-spacing:.5px;
+ box-shadow:0 5px 15px #0b30251a!important;
+}
+button.action:hover{background:#145b42!important;transform:translateY(-1px)!important}
+button.secondary{
+ background:#f2efe6!important;color:#174431!important;
+ border:1px solid #c9b98f!important;border-radius:2px!important;
+}
+canvas{background:#f8f7f1!important;border:1px solid #e3ddcf!important;border-radius:2px!important}
+table{font-size:12px!important}
+th{
+ background:#103e2e!important;color:#f7f1e3!important;
+ letter-spacing:.7px;font-size:10px!important;text-transform:uppercase;
+}
+td{color:#46564c}
+tr:nth-child(even){background:#f3f1e9!important}
+.pill{
+ background:#e9eee5!important;color:#345b43!important;
+ border:1px solid #d7e0d3;border-radius:2px!important;
+ letter-spacing:.5px;
+}
+footer{
+ background:#082c22!important;color:#d5d9ce!important;
+ border-top:1px solid #b99a5b77!important;
+ font-family:Georgia,serif!important;letter-spacing:.3px;
+}
+@media(max-width:850px){
+ .layout{grid-template-columns:1fr!important}.content{display:flex;flex-direction:column;gap:16px}.step{margin-bottom:0}
+ .sidebar{position:static}
+ .step{padding:21px!important}
+ .starbucks-header{min-height:290px;padding:36px 18px!important}
+}
+@media(max-width:560px){
+ .topgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .metric{padding:13px!important}
+ .metric strong{font-size:23px!important}
+ .step h2{font-size:23px!important}
+ .header-tags span{font-size:8px!important}
+}
+
+
+/* efficiency / usability additions */
+.progress-container{position:sticky;top:0;z-index:20}
+canvas{display:block;height:220px}
+button.action+button,.results+button{margin-left:0}button.action+button.action{margin-left:8px}
+.sidebar{max-height:calc(100vh - 24px);overflow:auto}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+.starbucks-header p{margin-left:auto!important;margin-right:auto!important;text-align:center}
+</style>
+</head>
+<body>
+<header class="starbucks-header">
+ <div class="brand-logo">
+  <img src="https://cdn.simpleicons.org/starbucks/006241" alt="Starbucks Siren logo" onerror="this.style.display='none'">
+ </div>
+ <div class="brand-label">STARBUCKS INDIA</div>
+ <h1>The Coffee Business Challenge</h1>
+ <p style="display:block;width:100%;max-width:760px;margin:0 auto!important;text-align:center!important">Think Like a Manager. Decide Like an Economist.</p>
+ <div class="header-tags">
+  <span>MBA SEMESTER I</span><span>MANAGERIAL ECONOMICS</span><span>INTERNAL ASSESSMENT 3</span>
+ </div>
+</header>
+<div class="progress-container"><div class="progress-heading"><span>SIMULATION PROGRESS</span><span id="progressText"></span></div><div class="progress-track"><div id="progressBar" style="width:0"></div></div></div>
+<div class="wrap">
+ <div class="notice"><b>About Starbucks in the Indian café market</b><br>
+Starbucks operates in India's organised premium café and coffeehouse space through Tata Starbucks, a joint venture between Tata Consumer Products and Starbucks Corporation. It competes with established international café brands such as Costa Coffee and Tim Hortons, as well as home-grown chains including Third Wave Coffee and Blue Tokai. Rather than competing only on the price of a cup of coffee, Starbucks differentiates itself through its beverage range, store experience, brand identity, customisation and convenient locations. This simulation explores how pricing, customer preferences, operating costs and competitors' decisions influence its performance in this market.</div>
+
+ <div class="topgrid" style="margin-bottom:18px">
+  <div class="metric"><small>FY26 revenue · reported</small><strong>₹1,367 cr</strong></div>
+  <div class="metric"><small>India store network · reported</small><strong>502 stores</strong></div>
+  <div class="metric"><small>Revenue growth · reported</small><strong>+7%</strong></div>
+  <div class="metric"><small>Oct 2026 CPI · reported</small><strong>6.09%</strong></div>
+ </div>
+ <div class="topgrid">
+  <div class="metric"><small>Weekly demand · modelled</small><strong id="mDemand">—</strong></div>
+  <div class="metric"><small>Weekly revenue · modelled</small><strong id="mRevenue">—</strong></div>
+  <div class="metric"><small>Weekly total cost · modelled</small><strong id="mCost">—</strong></div>
+  <div class="metric"><small>Weekly operating profit · modelled</small><strong id="mProfit">—</strong></div>
+ </div>
+ <div class="layout">
+<aside class="sidebar" id="nav"><h3>Simulation steps</h3></aside>
+<main class="content">
+   <section class="step" id="s1">
+    <div class="stepnum">Step 1 of 12</div><h2>Define the market: demand and supply</h2>
+    <p class="sub">Product: one standard café beverage. Unit of analysis: one Starbucks India store per week. The ₹367 starting price is a published Tall cappuccino menu reference; weekly quantity and store costs are estimated because Starbucks does not publish them. Price is in Indian rupees (₹).</p>
+    <div class="controls">
+     <div class="control"><label>Starbucks Tall cappuccino reference price <output id="priceOut">₹367</output></label><input id="price" type="range" min="150" max="600" value="367" step="1"></div>
+     <div class="control"><label>Demand index <output id="demandOut">100%</output></label><input id="demandShift" type="range" min="60" max="140" value="100"></div>
+     <div class="control"><label>Input-cost / supply pressure <output id="supplyOut">100%</output></label><input id="supplyShift" type="range" min="70" max="150" value="100"></div>
+     <div class="control"><label>Store service capacity (drinks/week) · model input <output id="capacityOut">1,000</output></label><input id="capacity" type="range" min="300" max="1800" value="1000" step="50"></div>
+    </div>
+    <div class="results"><div class="result"><small>Estimated demand at current price</small><b id="demandResult">—</b></div><div class="result"><small>Market-clearing price</small><b id="eqPrice">—</b></div><div class="result"><small>Quantity served at current price</small><b id="served">—</b></div></div>
+    <div class="results"><div class="result"><small>Equilibrium quantity</small><b id="equilibriumQuantity">—</b></div><div class="result"><small>Marginal cost / supply price</small><b id="equilibriumMC">—</b></div><div class="result"><small>Capacity limit</small><b id="equilibriumCapacity">—</b></div></div>
+    <canvas id="marketChart" width="800" height="220"></canvas>
+    <div class="explain" id="step1note" style="border-left-color:#006241">Move the demand and supply sliders. Higher demand tends to raise equilibrium price; higher supply pressure tends to reduce available quantity or raise costs.</div>
+   </section>
+   <section class="step" id="s2">
+    <div class="stepnum">Step 2 of 12</div><h2>Model the customer: two customer segments</h2>
+    <p class="sub">Customers do not all react to price in the same way. Compare premium-experience customers with budget-conscious customers.</p>
+    <div class="controls">
+     <div class="control"><label>Premium customer share <output id="premiumOut">45%</output></label><input id="premiumShare" type="range" min="20" max="80" value="45"></div>
+     <div class="control"><label>Premium segment price sensitivity <output id="premiumSensOut">0.7</output></label><input id="premiumSens" type="range" min="2" max="15" value="7"></div>
+     <div class="control"><label>Budget segment price sensitivity <output id="budgetSensOut">1.5</output></label><input id="budgetSens" type="range" min="8" max="25" value="15"></div>
+     <div class="control"><label>Average customer weekly budget <output id="budgetOut">₹900</output></label><input id="budget" type="range" min="300" max="1800" value="900" step="50"></div>
+     <div class="control"><label>Substitute café drink price <output id="substitutePriceOut">₹280</output></label><input id="substitutePrice" type="range" min="100" max="500" value="280" step="5"></div>
+    </div>
+    <div class="results"><div class="result"><small>Premium segment demand</small><b id="premiumDemand">—</b></div><div class="result"><small>Budget segment demand</small><b id="budgetDemand">—</b></div><div class="result"><small>Budget drinks affordable</small><b id="affordable">—</b></div></div>
+    <div class="results"><div class="result"><small>Budget-line intercept: Starbucks drinks</small><b id="budgetIntercept">—</b></div><div class="result"><small>Budget-line intercept: substitutes</small><b id="substituteIntercept">—</b></div><div class="result"><small>Illustrative utility index</small><b id="utilityIndex">—</b></div></div>
+    <div class="explain">Budget constraint: P × Starbucks drinks + P<sub>s</sub> × substitute drinks = weekly budget. The two intercepts show the maximum quantity affordable if the customer spends the entire budget on only one option. Utility is illustrated with U = √(x × y), a simple Cobb–Douglas-style preference index for Starbucks drinks (x) and substitute drinks (y); it is not a measured customer utility score.</div>
+    <div class="explain">Interpretation: a higher substitute price makes Starbucks relatively more attractive, while a tighter budget limits the feasible combinations of both drinks.</div>
+   </section>
+   <section class="step" id="s3">
+    <div class="stepnum">Step 3 of 12</div><h2>Price environment: inflation and real income</h2>
+    <p class="sub">Inflation can increase coffee, milk, rent and wage costs while reducing customers' purchasing power.</p>
+    <div class="controls">
+     <div class="control"><label>Annual inflation assumption <output id="inflationOut">6.09%</output></label><input id="inflation" type="range" min="0" max="15" value="6.09" step="0.01"></div>
+     <div class="control"><label>Nominal customer income index <output id="incomeOut">100</output></label><input id="income" type="range" min="70" max="140" value="100"></div>
+    </div>
+    <div class="results"><div class="result"><small>Real income index</small><b id="realIncome">—</b></div><div class="result"><small>Real price in base-year rupees</small><b id="realPrice">—</b></div><div class="result"><small>Illustrative input-cost index</small><b id="costIndex">—</b></div></div>
+    <div class="explain">Real income = nominal income index ÷ (1 + inflation rate). Real price = current nominal price ÷ (1 + inflation rate). The model assumes input costs rise with inflation.</div>
+   </section>
+   <section class="step" id="s4">
+    <div class="stepnum">Step 4 of 12</div><h2>Size the market: demand, network effects and consumer surplus</h2>
+    <p class="sub">A larger loyal customer base can increase brand visibility and repeat purchases. Consumer surplus is the difference between willingness to pay and the price actually paid.</p>
+    <div class="controls">
+     <div class="control"><label>Loyalty / network index <output id="networkOut">100</output></label><input id="network" type="range" min="50" max="160" value="100"></div>
+     <div class="control"><label>Modelled willingness to pay <output id="wtpOut">₹450</output></label><input id="wtp" type="range" min="200" max="650" value="450" step="10"></div>
+    </div>
+    <div class="results"><div class="result"><small>Demand incl. loyalty</small><b id="networkDemand">—</b></div><div class="result"><small>Loyalty / network multiplier</small><b id="networkMultiplier">—</b></div><div class="result"><small>Demand before loyalty</small><b id="baseNetworkDemand">—</b></div></div>
+    <div class="results"><div class="result"><small>Consumer surplus / drink</small><b id="surplus">—</b></div><div class="result"><small>Estimated weekly surplus</small><b id="totalSurplus">—</b></div><div class="result"><small>Served quantity</small><b id="networkServed">—</b></div></div>
+    <div class="explain">This simplified network effect assumes loyalty raises demand modestly. Consumer surplus is estimated as max(0, willingness to pay − price).</div>
+   </section>
+   <section class="step" id="s5">
+    <div class="stepnum">Step 5 of 12</div><h2>Forecast demand</h2>
+    <p class="sub">Use a simple price-elasticity model to estimate demand under a future price change. This is a teaching forecast, not a statistical estimate from Starbucks' internal sales.</p>
+    <div class="controls">
+     <div class="control"><label>Forecast price change <output id="forecastChangeOut">0%</output></label><input id="forecastChange" type="range" min="-20" max="30" value="0"></div>
+     <div class="control"><label>Price elasticity e (drives demand &amp; optimum) <output id="elasticityOut">−1.2</output></label><input id="elasticity" type="range" min="5" max="25" value="12"></div>
+     <div class="control"><label>Income growth assumption <output id="incomeGrowthOut">3%</output></label><input id="incomeGrowth" type="range" min="-10" max="15" value="3"></div>
+     <div class="control"><label>Rival price change <output id="rivalChangeOut">0%</output></label><input id="rivalChange" type="range" min="-20" max="20" value="0"></div>
+    </div>
+    <div class="results"><div class="result"><small>Best-case demand</small><b id="bestDemand">—</b></div><div class="result"><small>Base forecast</small><b id="baseForecast">—</b></div><div class="result"><small>Worst-case demand</small><b id="worstDemand">—</b></div></div>
+    <div class="results"><div class="result"><small>Regression forecast</small><b id="regForecast">—</b></div><div class="result"><small>Regression R²</small><b id="regR2">—</b></div><div class="result"><small>Regression equation</small><b id="regEquation">—</b></div></div>
+    <canvas id="forecastChart" width="800" height="220"></canvas>
+    <div class="explain">A simple least-squares regression is estimated from the illustrative price–quantity observations embedded in this teaching simulation. These are model-generated teaching data, not Starbucks internal sales or verified historical observations. The regression is used as a second forecasting method alongside the constant-elasticity model. Own-price elasticity measures the percentage change in quantity demanded caused by a 1% change in own price.</div>
+   </section>
+   <section class="step" id="s6">
+    <div class="stepnum">Step 6 of 12</div><h2>Model production: staff and equipment</h2>
+    <p class="sub">A café uses labour and equipment to prepare beverages. In the short run, equipment is treated as fixed and staff hours are variable.</p>
+    <div class="controls">
+     <div class="control"><label>Staff-hours per week <output id="labourOut">120</output></label><input id="labour" type="range" min="30" max="240" value="120" step="5"></div>
+     <div class="control"><label>Equipment capacity index <output id="equipmentOut">100</output></label><input id="equipment" type="range" min="60" max="150" value="100"></div>
+    </div>
+    <div class="results"><div class="result"><small>Total product (drinks)</small><b id="totalProduct">—</b></div><div class="result"><small>Average product / staff-hour</small><b id="averageProduct">—</b></div><div class="result"><small>Marginal product</small><b id="marginalProduct">—</b></div></div>
+    <div class="results"><div class="result"><small>Staff-hours where MP = AP</small><b id="apMaxLabour">—</b></div><div class="result"><small>Maximum average product</small><b id="apMaximum">—</b></div><div class="result"><small>Productivity stage</small><b id="productivityStage">—</b></div></div>
+    <div class="explain">Production function: TP = (4L + 0.08L² − 0.00025L³) × equipment index / 100. AP = TP/L and MP = dTP/dL. With these coefficients, MP = AP at L = 160 staff-hours, which is also where AP reaches its maximum. This is an illustrative short-run production relationship, not an engineering estimate of Starbucks operations.</div>
+   </section>
+   <section class="step" id="s7">
+    <div class="stepnum">Step 7 of 12</div><h2>Model costs: short-run and long-run</h2>
+    <p class="sub">Separate fixed costs (rent and equipment lease) from variable costs (coffee, milk, cups and hourly labour).</p>
+    <div class="controls">
+     <div class="control"><label>Weekly fixed cost <output id="fixedOut">₹55,000</output></label><input id="fixed" type="range" min="20000" max="100000" value="55000" step="1000"></div>
+     <div class="control"><label>Variable cost per drink <output id="variableOut">₹95</output></label><input id="variable" type="range" min="45" max="180" value="95" step="5"></div>
+     <div class="control"><label>Plant / store size index <output id="plantOut">100</output></label><input id="plant" type="range" min="70" max="150" value="100"></div>
+    </div>
+    <div class="results"><div class="result"><small>Total cost</small><b id="totalCost">—</b></div><div class="result"><small>Average cost / drink</small><b id="averageCost">—</b></div><div class="result"><small>Marginal cost</small><b id="marginalCost">—</b></div></div>
+    <div class="results"><div class="result"><small>Long-run average cost at model output</small><b id="lracCurrent">—</b></div><div class="result"><small>Minimum efficient scale (drinks/week)</small><b id="mesOutput">—</b></div><div class="result"><small>LRAC at MES</small><b id="lracMinimum">—</b></div></div>
+    <canvas id="lracChart" width="800" height="220"></canvas>
+    <div class="explain">Short-run: TC = F + cQ, AC = TC/Q and MC = c. Long-run scale illustration: LRAC(Q) = ₹80 + 0.00008(Q − 1,000)² per drink. Its minimum is at 1,000 drinks/week, the minimum efficient scale (MES). This U-shaped LRAC is a separate teaching curve that represents economies of scale up to MES and diseconomies beyond it; it is not estimated from Starbucks accounting data.</div>
+   </section>
+   <section class="step" id="s8">
+    <div class="stepnum">Step 8 of 12</div><h2>Set the competitive setting</h2>
+    <p class="sub">Starbucks differentiates its experience, beverages and brand. The simulation compares its Tall cappuccino reference price with listed Delhi menu prices from Costa Coffee, Third Wave Coffee, Blue Tokai and Tim Hortons.</p>
+    <div class="controls">
+     <div class="control"><label>Average listed rival cappuccino price <output id="rivalPriceOut">₹244</output></label><input id="rivalPrice" type="range" min="100" max="450" value="244" step="1"></div>
+     <div class="control"><label>Number of active rivals <output id="rivalsOut">4</output></label><input id="rivals" type="range" min="1" max="8" value="4"></div>
+     <div class="control"><label>Rival reaction intensity <output id="reactionOut">50%</output></label><input id="reaction" type="range" min="0" max="100" value="50"></div>
+    </div>
+    <div class="results"><div class="result"><small>Starbucks price position</small><b id="pricePosition">—</b></div><div class="result"><small>Illustrative market share</small><b id="marketShare">—</b></div><div class="result"><small>Market structure</small><b>Monopolistic competition</b></div></div>
+    <table><thead><tr><th>Brand / outlet menu listing</th><th>Drink</th><th>Listed price</th></tr></thead><tbody>
+<tr><td>Starbucks India</td><td>Tall cappuccino</td><td>₹367</td></tr>
+<tr><td>Costa Coffee</td><td>Small cappuccino</td><td>₹285</td></tr>
+<tr><td>Third Wave Coffee</td><td>Regular hot cappuccino</td><td>₹256</td></tr>
+<tr><td>Blue Tokai</td><td>Cappuccino</td><td>₹240</td></tr>
+<tr><td>Tim Hortons</td><td>Cappuccino</td><td>₹195</td></tr>
+</tbody></table>
+<div class="explain"><b>Price comparison:</b> listed menu prices are treated as indicative competitor benchmarks, not perfectly like-for-like prices. The rival-reaction slider now controls how strongly the entered rival price affects the model's effective rival benchmark: 0% means no response is passed through; 100% means the full rival-price movement affects demand and the illustrative share indicator.</div>
+   </section>
+   <section class="step" id="s9">
+    <div class="stepnum">Step 9 of 12</div><h2>Maximise profit: MR = MC</h2>
+    <p class="sub">Demand is Q = K·P<sup>−e</sup> (constant elasticity) and marginal cost is constant, so the profit-maximising price has a closed form. No trial-and-error search is needed; a numerical search is shown only as a cross-check.</p>
+    <div class="explain" id="formulaBox"></div>
+    <div class="results"><div class="result"><small>Current weekly profit</small><b id="currentProfit">—</b></div><div class="result"><small>Formula optimum price</small><b id="optPrice">—</b></div><div class="result"><small>Profit at optimum</small><b id="optProfit">—</b></div></div>
+    <div class="results"><div class="result"><small>Marginal revenue at optimum (MR)</small><b id="optMR">—</b></div><div class="result"><small>Marginal cost (MC)</small><b id="optMC">—</b></div><div class="result"><small>MR–MC difference</small><b id="mrMcGap">—</b></div></div>
+    <div class="explain" id="mrMcCheck"></div>
+    <button class="action" id="applyOptimum" style="margin-top:14px">Apply formula optimum price</button>
+    <canvas id="mrmcChart"></canvas>
+    <canvas id="profitChart"></canvas>
+    <div class="explain">Read the first chart as: produce until MR falls to MC. Where the demand curve meets the capacity line first, capacity (not MR = MC) sets the price. The second chart shows the same answer as the peak of the profit curve.</div>
+   </section>
+   <section class="step" id="s10">
+    <div class="stepnum">Step 10 of 12</div><h2>Price with market power: segmented pricing</h2>
+    <p class="sub">Compare one common price with differentiated prices for premium and budget-oriented customers. This is a simplified illustration of price discrimination.</p>
+    <div class="controls">
+     <div class="control"><label>Premium segment price <output id="premiumPriceOut">₹420</output></label><input id="premiumPrice" type="range" min="150" max="600" value="420" step="5"></div>
+     <div class="control"><label>Budget segment price <output id="budgetPriceOut">₹290</output></label><input id="budgetPrice" type="range" min="100" max="450" value="290" step="5"></div>
+    </div>
+    <div class="results"><div class="result"><small>Profit at single price</small><b id="singleProfit">—</b></div><div class="result"><small>Profit at segment prices</small><b id="segmentProfit">—</b></div><div class="result"><small>Higher-profit strategy</small><b id="betterStrategy">—</b></div></div>
+    <div class="results"><div class="result"><small>Best optimised single-price profit</small><b id="bestSingleProfit">—</b></div><div class="result"><small>Best single price</small><b id="bestSinglePrice">—</b></div><div class="result"><small>Segmented-profit advantage</small><b id="segmentAdvantage">—</b></div></div>
+    <div class="results"><div class="result"><small>Formula-optimal premium price</small><b id="optPremium">—</b></div><div class="result"><small>Formula-optimal budget price</small><b id="optBudget">—</b></div><div class="result"><small>Profit at those prices</small><b id="optSegProfit">—</b></div></div>
+    <button class="action" id="applySegments" style="margin-top:12px">Apply formula segment prices</button>
+    <div class="explain">Each segment has its own constant elasticity e<sub>s</sub>, so its profit-maximising price is P<sub>s</sub>* = MC·e<sub>s</sub>/(e<sub>s</sub>−1). A segment with e ≤ 1 has no interior optimum, so its price goes to the ceiling. Capacity is rationed to the higher-priced segment first.</div>
+    <div class="explain">Real-world price discrimination requires customer groups to have different willingness to pay and limits on resale. A student offer or loyalty offer can be discussed as an example, but the prices here are hypothetical.</div>
+   </section>
+   <section class="step" id="s11">
+    <div class="stepnum">Step 11 of 12</div><h2>Anticipate rivals: game theory and price war</h2>
+    <p class="sub">Choose a strategy and compare payoffs when Starbucks and a rival either maintain prices or cut prices.</p>
+    <div class="controls">
+     <div class="control"><label>Your strategy</label><select id="ourMove"><option value="hold">Maintain premium price</option><option value="cut">Cut price</option></select></div>
+     <div class="control"><label>Rival strategy</label><select id="theirMove"><option value="hold">Maintain price</option><option value="cut">Cut price</option></select></div>
+     <div class="control"><label>Repeated-game rounds <output id="gameRoundsOut">5</output></label><input id="gameRounds" type="range" min="1" max="10" value="5"></div>
+    </div>
+    <div class="results"><div class="result"><small>Starbucks stage payoff</small><b id="ourPayoff">—</b></div><div class="result"><small>Rival stage payoff</small><b id="theirPayoff">—</b></div><div class="result"><small>Outcome</small><b id="gameOutcome">—</b></div></div>
+    <div class="results"><div class="result"><small>Starbucks cumulative payoff</small><b id="ourCumulative">—</b></div><div class="result"><small>Rival cumulative payoff</small><b id="theirCumulative">—</b></div><div class="result"><small>Rounds modelled</small><b id="roundCount">—</b></div></div>
+    <table><thead><tr><th></th><th>Rival maintains</th><th>Rival cuts</th></tr></thead><tbody><tr><th>Starbucks maintains</th><td>70, 70</td><td>35, 85</td></tr><tr><th>Starbucks cuts</th><td>85, 35</td><td>45, 45</td></tr></tbody></table>
+    <div class="explain" id="nashNote"></div>
+    <div class="explain">Payoffs are illustrative index values, not rupees. The dilemma: cutting price can attract customers if the rival holds, but mutual price cuts can leave both firms worse off than mutual restraint.</div>
+   </section>
+   <section class="step" id="s12">
+    <div class="stepnum">Step 12 of 12</div><h2>Externalities and risk</h2>
+    <p class="sub">Account for an environmental or social effect and one source of uncertainty that could change the result.</p>
+    <div class="controls">
+     <div class="control"><label>Sustainability investment per week <output id="greenOut">₹5,000</output></label><input id="green" type="range" min="0" max="20000" value="5000" step="1000"></div>
+     <div class="control"><label>Random demand shock <output id="riskOut">0%</output></label><input id="risk" type="range" min="-25" max="25" value="0" disabled></div>
+     <div class="control"><label><input id="randomShockEnabled" type="checkbox" style="width:auto;min-height:auto;margin-right:8px">Enable random shock</label><button class="action secondary" id="generateShock" type="button">Generate random shock</button></div>
+     <div class="control"><label>Regulatory / compliance cost <output id="regulationOut">₹2,000</output></label><input id="regulation" type="range" min="0" max="15000" value="2000" step="500"></div>
+     <div class="control"><label>Risk appetite</label><select id="riskAppetite"><option value="low">Low (cautious)</option><option value="medium" selected>Medium</option><option value="high">High (aggressive)</option></select></div>
+    </div>
+    <div class="results"><div class="result"><small>Profit after ESG & compliance</small><b id="riskProfit">—</b></div><div class="result"><small>Demand after shock</small><b id="shockDemand">—</b></div><div class="result"><small>Risk-adjusted assessment</small><b id="riskAssessment">—</b></div></div>
+    <div class="explain">Externality example: disposable cups and energy use can impose environmental costs on society. Sustainability investment may reduce this impact but increases the store's short-run cost. When random shock is enabled, use “Generate random shock” to draw one demand shock between −25% and +25%. When disabled, the shock is fixed at 0%.</div>
+   </section>
+   <section class="step" id="rounds">
+    <div class="stepnum">Putting all 12 steps together</div><h2>Decision rounds and final scorecard</h2>
+    <p class="sub">Complete a baseline, a shock, a rival response and a price-war round. Selecting a round loads its scenario into the sliders above; saving stores the price, profit and formula optimum in your decision log.</p>
+    <div class="controls">
+     <div class="control"><label>Scenario round</label><select id="roundType"><option value="Baseline">1 · Baseline conditions</option><option value="Cost shock">2 · Input-cost shock (+15%)</option><option value="Rival response">3 · Rival cuts price (-10%)</option><option value="Price war">4 · Both firms cut prices</option></select></div>
+     <div class="control"><label>Your decision / reasoning</label><input id="roundReason" type="text" value="Maintain premium positioning while monitoring demand."></div>
+    </div>
+    <button class="action" id="saveRound">Save this decision round</button>
+    <button class="action secondary" id="resetAll">Reset simulation</button>
+    <div class="results"><div class="result"><small>Current profit</small><b id="scoreProfit">—</b></div><div class="result"><small>Distance from optimum price</small><b id="scoreGap">—</b></div><div class="result"><small>Decision quality note</small><b id="scoreNote">—</b></div></div>
+    <div class="explain">Scorecard guide: a good decision is not simply the one with the highest immediate sales. Explain the trade-off between price, demand, capacity, costs, customer segments and long-run positioning.</div>
+   </section>
+   <section class="step" id="validation">
+    <div class="stepnum">Model checks</div><h2>Validation and sensitivity checks</h2>
+    <p class="sub">Run the built-in checks to verify that the key formulas behave consistently across three standard scenarios and boundary values. These are model checks, not a substitute for recording a real first-time-user test.</p>
+    <button class="action" id="runValidation" type="button">Run model validation</button>
+    <div id="validationResults" class="explain">Select “Run model validation” to calculate the three test scenarios and boundary checks.</div>
+    <div class="explain"><b>Manual usability test before submission:</b> ask one person who has not used the simulation to complete the 12 steps without coaching. Record the tester's role (not sensitive personal details), time taken, points of confusion, and changes made. Do not claim this test was completed until it has actually been performed.</div>
+   </section>
+   <section class="step" id="log">
+    <div class="stepnum">Required project evidence</div><h2>Decision log</h2>
+    <p class="sub">The assignment requires at least three entries explaining the decision and its reasoning. Add a note after each round.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0">
+      <button class="action" id="downloadLog">Download decision log</button>
+      <button class="action secondary" id="restoreLog">Restore sample decisions</button>
+     </div>
+     <div id="logEntries"></div>
+   </section>
+</main>
+ </div>
+</div>
+<footer>Starbucks India · Managerial Economics Simulation</footer>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN'),integer=n=>Math.round(n).toLocaleString('en-IN'),pct=n=>(n*100).toFixed(0)+'%',esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const REF=367,PMIN=150,PMAX=600,KEY='starbucksIndiaDecisionLogV1';
+const ids=['price','demandShift','supplyShift','capacity','premiumShare','premiumSens','budgetSens','budget','substitutePrice','inflation','income','network','wtp','forecastChange','elasticity','incomeGrowth','rivalChange','labour','equipment','fixed','variable','plant','rivalPrice','rivals','reaction','premiumPrice','budgetPrice','green','risk','regulation'];
+const labels={price:['priceOut',v=>'₹'+v],demandShift:['demandOut',v=>v+'%'],supplyShift:['supplyOut',v=>v+'%'],capacity:['capacityOut',integer],premiumShare:['premiumOut',v=>v+'%'],premiumSens:['premiumSensOut',v=>(v/10).toFixed(1)],budgetSens:['budgetSensOut',v=>(v/10).toFixed(1)],budget:['budgetOut',fmt],substitutePrice:['substitutePriceOut',fmt],inflation:['inflationOut',v=>Number(v).toFixed(2)+'%'],income:['incomeOut',v=>v],network:['networkOut',v=>v],wtp:['wtpOut',fmt],forecastChange:['forecastChangeOut',v=>v+'%'],elasticity:['elasticityOut',v=>'−'+(v/10).toFixed(1)],incomeGrowth:['incomeGrowthOut',v=>v+'%'],rivalChange:['rivalChangeOut',v=>v+'%'],labour:['labourOut',v=>v],equipment:['equipmentOut',v=>v],fixed:['fixedOut',fmt],variable:['variableOut',fmt],plant:['plantOut',v=>v],rivalPrice:['rivalPriceOut',fmt],rivals:['rivalsOut',v=>v],reaction:['reactionOut',v=>v+'%'],premiumPrice:['premiumPriceOut',fmt],budgetPrice:['budgetPriceOut',fmt],green:['greenOut',fmt],risk:['riskOut',v=>v+'%'],regulation:['regulationOut',fmt]};
+const sampleLogs=[
+ {type:'Baseline',reason:'Maintain the premium price position. Starbucks competes through brand value, beverage customisation, store ambience and customer experience, so an immediate price cut is not necessary in normal market conditions.',adj:'Baseline decision: protect brand positioning while monitoring customer demand and store-level costs.',price:367,profit:null},
+ {type:'Cost shock',reason:'If coffee beans, milk, wages, rent and packaging costs rise, first review supplier contracts, inventory wastage, staffing schedules and energy use. Avoid passing the full cost increase to customers immediately because higher prices may reduce demand.',adj:'Cost-shock decision: control avoidable costs first; consider a selective price revision only if margins remain under pressure.',price:367,profit:null},
+ {type:'Rival response',reason:'If a competitor reduces its cappuccino price, do not automatically match the discount. Use loyalty benefits, limited-time offers and product differentiation to retain customers without weakening the premium brand position.',adj:'Rival-response decision: defend customer loyalty and perceived value instead of starting a broad price war.',price:367,profit:null},
+ {type:'Price war',reason:'If both Starbucks and competitors begin cutting prices, avoid repeated across-the-board discounts. Focus on targeted promotions, bundles and operational efficiency because a price war can increase sales volume but reduce contribution margins.',adj:'Price-war decision: prioritise contribution margin and long-term customer value over short-term volume.',price:367,profit:null}
+];
+const DEF={};ids.forEach(id=>DEF[id]=$(id).value);
+const PRESET={'Baseline':{},'Cost shock':{supplyShift:115},'Rival response':{rivalPrice:220},'Price war':{rivalPrice:220,price:330}};
+const label=id=>{const[t,f]=labels[id];$(t).textContent=f($(id).value)};
+let logs;try{logs=JSON.parse(localStorage.getItem(KEY));if(!Array.isArray(logs)||!logs.length)throw 0}catch(e){logs=sampleLogs.slice()}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(logs))}catch(e){}};
+
+/* ---------- Model: Q = K·P^(-e), TC = F + c·Q, capacity-limited ---------- */
+function build(){
+ const v={};ids.forEach(id=>v[id]=+$(id).value);
+ const e=v.elasticity/10,plant=v.plant/100;
+ const production=Math.max(0,Math.round((4*v.labour+.08*v.labour**2-.00025*v.labour**3)*v.equipment/100));
+ const cap=Math.max(1,Math.min(v.capacity,production)*plant);
+ const effectiveRivalPrice=244+(v.reaction/100)*(v.rivalPrice-244);
+ const K=1000*v.demandShift/100*(100/v.supplyShift)**.12*(.9+v.network/1000)*((v.income/100)*1.0609/(1+v.inflation/100))**.5*(effectiveRivalPrice/244)**.25*REF**e;
+ const c=v.variable*v.supplyShift/100,F=v.fixed*plant**.7+v.green+v.regulation;
+ const qd=p=>K*p**-e;
+ const at=p=>{const d=qd(p),q=Math.min(d,cap),rev=p*q,cost=F+c*q;return{p,d,q,rev,cost,profit:rev-cost}};
+ return{v,e,production,cap,K,c,F,qd,at,pCap:(K/cap)**(1/e),effectiveRivalPrice};
+}
+/* Closed-form optimum: P* = MC·e/(e-1); if capacity binds, P = (K/cap)^(1/e); clamp to price range */
+function optimum(m){
+ const pStar=m.e>1?m.c*m.e/(m.e-1):Infinity,raw=Math.max(pStar,m.pCap),price=Math.min(PMAX,Math.max(PMIN,raw));
+ const status=raw>PMAX?'ceiling':raw<PMIN?'floor':pStar>=m.pCap?'interior':'capacity';
+ let grid={p:PMIN,profit:-Infinity};const curve=[];
+ for(let p=PMIN;p<=PMAX;p++){const r=m.at(p);curve.push([p,r.profit]);if(r.profit>grid.profit)grid={p,profit:r.profit}}
+ return{pStar,price,status,grid,curve,...m.at(price)};
+}
+
+/* ---------- Charts ---------- */
+function plot(id,o){
+ const c=$(id),r=devicePixelRatio||1,W=c.clientWidth||700,H=220;c.width=W*r;c.height=H*r;
+ const x=c.getContext('2d');x.setTransform(r,0,0,r,0,0);
+ const L=54,R=14,T=26,B=28,X=a=>L+(a-o.x0)/(o.x1-o.x0)*(W-L-R),Y=a=>H-B-(a-o.y0)/(o.y1-o.y0)*(H-T-B);
+ x.font='11px Arial';x.textBaseline='middle';x.strokeStyle='#e3ddcf';x.fillStyle='#5d6b62';x.lineWidth=1;
+ for(let i=0;i<=4;i++){const y=T+i*(H-T-B)/4;x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.textAlign='right';x.fillText(o.yf(o.y1-i*(o.y1-o.y0)/4),L-6,y);x.textAlign='center';x.fillText(o.xf(o.x0+i*(o.x1-o.x0)/4),L+i*(W-L-R)/4,H-B+14)}
+ x.save();x.beginPath();x.rect(L,T,W-L-R,H-T-B);x.clip();
+ o.lines.forEach(s=>{x.strokeStyle=s.c;x.lineWidth=2;x.setLineDash(s.d||[]);x.beginPath();s.pts.forEach((q,i)=>i?x.lineTo(X(q[0]),Y(q[1])):x.moveTo(X(q[0]),Y(q[1])));x.stroke()});
+ x.restore();x.setLineDash([]);
+ let lx=L;x.textAlign='left';o.lines.forEach(s=>{x.fillStyle=s.c;x.fillRect(lx,9,12,3);x.fillStyle='#34453c';x.fillText(s.n,lx+16,11);lx+=28+x.measureText(s.n).width});
+ o.marks.forEach(k=>{const a=X(k.x),b=Y(k.y),left=a>W-120;x.fillStyle=k.c;x.beginPath();x.arc(a,b,5,0,7);x.fill();x.fillStyle='#1c3028';x.textAlign=left?'right':'left';x.fillText(k.n,a+(left?-9:9),b-11)});
+}
+function charts(m,cur,o){
+ const dem=[],mr=[];for(let p=PMIN;p<=PMAX;p+=5){dem.push([m.qd(p),p]);mr.push([m.qd(p),p*(1-1/m.e)])}
+ const x1=Math.max(m.qd(PMIN),m.cap)*1.05,base={x0:0,x1,y0:0,y1:PMAX,xf:integer,yf:fmt};
+ const eq=Math.max(m.c,m.pCap),D={n:'Demand',c:'#006241',pts:dem},capL={n:'Capacity',c:'#a34f43',d:[5,4],pts:[[m.cap,0],[m.cap,PMAX]]};
+ plot('marketChart',{...base,lines:[D,{n:'Supply (MC up to capacity)',c:'#b99a5b',pts:[[0,m.c],[m.cap,m.c],[m.cap,PMAX]]}],marks:[{x:cur.q,y:cur.p,c:'#006241',n:'Your price'},{x:Math.min(m.cap,m.qd(eq)),y:eq,c:'#b99a5b',n:'Equilibrium'}]});
+ plot('mrmcChart',{...base,lines:[D,{n:'MR',c:'#4b7bb5',pts:mr},{n:'MC',c:'#b99a5b',pts:[[0,m.c],[x1,m.c]]},capL],marks:[{x:o.q,y:o.price,c:'#006241',n:'Optimum price '+fmt(o.price)},{x:o.q,y:Math.max(0,Math.min(o.price*(1-1/m.e),PMAX)),c:'#4b7bb5',n:'MR = MC'}]});
+ const ys=o.curve.map(a=>a[1]),lo=Math.min(...ys),hi=Math.max(...ys),pad=(hi-lo||1)*.08;
+ plot('profitChart',{x0:PMIN,x1:PMAX,y0:lo-pad,y1:hi+pad,xf:fmt,yf:n=>'₹'+(n/1000).toFixed(0)+'k',lines:[{n:'Weekly profit by price',c:'#006241',pts:o.curve}],marks:[{x:cur.p,y:cur.profit,c:'#a34f43',n:'Current'},{x:o.price,y:o.profit,c:'#b99a5b',n:'Optimum'}]});
+}
+
+
+/* ---------- Forecast regression: illustrative teaching observations ---------- */
+const regressionData=[[220,1180],[250,1105],[280,1040],[310,965],[340,900],[370,835],[400,770],[430,710]];
+function regression(){
+ const n=regressionData.length,xb=regressionData.reduce((s,a)=>s+a[0],0)/n,yb=regressionData.reduce((s,a)=>s+a[1],0)/n;
+ const num=regressionData.reduce((s,a)=>s+(a[0]-xb)*(a[1]-yb),0),den=regressionData.reduce((s,a)=>s+(a[0]-xb)**2,0);
+ const b=num/den,a=yb-b*xb,ssTot=regressionData.reduce((s,z)=>s+(z[1]-yb)**2,0),ssRes=regressionData.reduce((s,z)=>s+(z[1]-(a+b*z[0]))**2,0);
+ return {a,b,r2:1-ssRes/ssTot,predict:p=>Math.max(0,a+b*p)};
+}
+function segmentProfit(m,pp,pb,basePrice){
+ const v=m.v,raw=m.qd(basePrice),share=v.premiumShare/100,ep=v.premiumSens/10,eb=v.budgetSens/10;
+ let left=m.cap,rev=0,q=0;
+ for(const s of [{q:raw*share*(pp/basePrice)**-ep,P:pp},{q:raw*(1-share)*(pb/basePrice)**-eb,P:pb}].sort((x,y)=>y.P-x.P)){
+   const served=Math.min(s.q,left);left-=served;rev+=served*s.P;q+=served;
+ }
+ return rev-(m.F+m.c*q);
+}
+function bestSinglePrice(m){
+ let best={price:PMIN,profit:-Infinity};
+ for(let price=PMIN;price<=PMAX;price++){
+   const profit=segmentProfit(m,price,price,m.v.price);
+   if(profit>best.profit)best={price,profit};
+ }
+ return best;
+}
+
+/* ---------- Update ---------- */
+let latest={},raf=0;const schedule=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(update)};
+function update(){
+ const m=build(),v=m.v,p=v.price,cur=m.at(p),o=optimum(m),sh=v.premiumShare/100,raw=cur.d,sv=cur.q;
+ const eq=Math.max(m.c,m.pCap),ep=v.premiumSens/10,eb=v.budgetSens/10,mr=o.price*(1-1/m.e),gap=mr-m.c;
+ const seg=(pp,pb)=>segmentProfit(m,pp,pb,p);
+ const star=(e,id)=>e>1?Math.min(+$(id).max,Math.max(+$(id).min,Math.round(m.c*e/(e-1)/5)*5)):+$(id).max;
+ const pp=star(ep,'premiumPrice'),pb=star(eb,'budgetPrice'),single=seg(p,p),segP=seg(v.premiumPrice,v.budgetPrice),bestSingle=bestSinglePrice(m);
+ const reg=regression(),regForecast=reg.predict(p*(1+v.forecastChange/100))*(1+v.incomeGrowth/100)**.5*(1+v.rivalChange/100)**.25;
+ const labour=v.labour,apMaxL=160,apMax=(4+.08*apMaxL-.00025*apMaxL**2)*v.equipment/100;
+ const apNow=m.production/Math.max(1,labour),mpNow=(4+.16*labour-.00075*labour**2)*v.equipment/100;
+ const lrac=q=>80+.00008*(q-1000)**2,lracNow=lrac(sv),segmentAdvantage=segP-bestSingle.profit;
+ const real=1+v.inflation/100;
+ const qEq=Math.min(m.cap,m.qd(eq)),networkMultiplier=.9+v.network/1000,baseNetworkDemand=raw/networkMultiplier;
+ const subInt=Math.floor(v.budget/v.substitutePrice),starInt=Math.floor(v.budget/p),utility=Math.sqrt(Math.max(0,starInt)*Math.max(0,subInt));
+ const fq=m.qd(p*(1+v.forecastChange/100))*(1+v.incomeGrowth/100)**.5*(1+v.rivalChange/100)**.25;
+ const appliedShock=$('randomShockEnabled').checked?v.risk:0;
+ const shock=Math.min(m.cap,Math.max(0,Math.round(raw*(1+appliedShock/100)))),riskP=p*shock-m.F-m.c*shock;
+ const surplus=Math.max(0,v.wtp-p),eff=o.profit>0?cur.profit/o.profit:null,e1=m.e.toFixed(1);
+ latest={price:o.price,pp,pb,cur,o};
+ const set=o=>{for(const k in o)$(k).textContent=o[k]};
+ set({mDemand:integer(sv),mRevenue:fmt(cur.rev),mCost:fmt(cur.cost),mProfit:fmt(cur.profit),
+  demandResult:integer(raw),eqPrice:fmt(eq),served:integer(sv),equilibriumQuantity:integer(qEq),equilibriumMC:fmt(m.c),equilibriumCapacity:integer(m.cap),
+  premiumDemand:integer(raw*sh),budgetDemand:integer(raw*(1-sh)),affordable:integer(Math.floor(v.budget/p))+' drinks',
+  budgetIntercept:integer(starInt),substituteIntercept:integer(subInt),utilityIndex:utility.toFixed(1),
+  realIncome:(v.income/real).toFixed(1),realPrice:fmt(p/real),costIndex:(100+v.inflation).toFixed(1),
+  networkDemand:integer(raw),networkMultiplier:networkMultiplier.toFixed(2)+'×',baseNetworkDemand:integer(baseNetworkDemand),networkServed:integer(sv),surplus:fmt(surplus),totalSurplus:fmt(surplus*sv),
+  bestDemand:integer(fq*1.1),baseForecast:integer(fq),worstDemand:integer(fq*.9),
+  regForecast:integer(regForecast),regR2:(reg.r2*100).toFixed(1)+'%',regEquation:'Q='+reg.a.toFixed(0)+' '+(reg.b<0?'−':'+')+' '+Math.abs(reg.b).toFixed(2)+'P',
+  totalProduct:integer(m.production),averageProduct:apNow.toFixed(2),marginalProduct:mpNow.toFixed(2),
+  apMaxLabour:integer(apMaxL),apMaximum:apMax.toFixed(2),productivityStage:labour<apMaxL?'Before AP maximum':labour===apMaxL?'At MP = AP':'After AP maximum',
+  totalCost:fmt(cur.cost),averageCost:fmt(sv?cur.cost/sv:0),marginalCost:fmt(m.c),
+  lracCurrent:fmt(lracNow),mesOutput:'1,000',lracMinimum:fmt(80),
+  pricePosition:p>m.effectiveRivalPrice?'Premium':'At / below rival',marketShare:(100/(1+v.rivals*Math.exp((p-m.effectiveRivalPrice)/250))).toFixed(1)+'%', 
+  currentProfit:fmt(cur.profit),optPrice:fmt(o.price),optProfit:fmt(o.profit),optMR:fmt(mr),optMC:fmt(m.c),mrMcGap:fmt(gap),
+  singleProfit:fmt(single),segmentProfit:fmt(segP),betterStrategy:segP>bestSingle.profit?'Segmented pricing':'Single price',
+  bestSingleProfit:fmt(bestSingle.profit),bestSinglePrice:fmt(bestSingle.price),segmentAdvantage:fmt(segmentAdvantage),
+  optPremium:fmt(pp),optBudget:fmt(pb),optSegProfit:fmt(seg(pp,pb)),
+  riskProfit:fmt(riskP),shockDemand:integer(shock),riskAssessment:v.riskAppetite==='low'?'Prefer stable demand':v.riskAppetite==='high'?'Accept higher volatility':'Balance return and risk',
+  scoreProfit:fmt(cur.profit),scoreGap:fmt(Math.abs(p-o.price)),scoreNote:eff==null?'Review price and demand trade-off':pct(eff)+' of max profit · '+(eff>=.95?'excellent':eff>=.85?'good':'review price')});
+ $('step1note').innerHTML='<b>Market equilibrium '+fmt(eq)+'</b>: the model uses a horizontal short-run supply segment at marginal cost, up to the store capacity, followed by a vertical capacity limit. If demand at MC exceeds capacity, the capacity-clearing price is higher. Current capacity is '+integer(m.cap)+' drinks/week.';
+ $('formulaBox').innerHTML='<b>Formula:</b> MR = P(1 − 1/e) = MC ⇒ <b>P* = MC · e / (e − 1)</b>. '+(m.e>1?'With e = '+e1+' and MC = '+fmt(m.c)+': P* = '+fmt(m.c)+' × '+e1+' / '+(m.e-1).toFixed(1)+' = <b>'+fmt(o.pStar)+'</b>. Lerner index (P − MC)/P = 1/e = '+pct(1/m.e)+'. ':'With e ≤ 1 demand is inelastic, so there is no interior optimum: a higher price always raises profit. ')+'Fixed costs change the level of profit, not P*. Capacity floor: P<sub>cap</sub> = (K/capacity)<sup>1/e</sup> = '+fmt(m.pCap)+'.';
+ const msg={interior:'Interior optimum: MR ('+fmt(mr)+') equals MC ('+fmt(m.c)+') exactly and no constraint binds.',
+  capacity:'Capacity binds: at P* = '+fmt(o.pStar)+' demand would exceed '+integer(m.cap)+' drinks, so the best price is the one that just fills capacity. MR exceeds MC by '+fmt(gap)+', the value of one more drink of capacity.',
+  ceiling:(m.pCap>o.pStar?'Capacity is very tight: filling it would need a price of '+fmt(m.pCap)+', above the ₹'+PMAX+' ceiling. ':'The unconstrained optimum ('+(isFinite(o.pStar)?fmt(o.pStar):'unbounded since e ≤ 1')+') is above the ₹'+PMAX+' ceiling. ')+'Price is capped at ₹'+PMAX+' and MR stays above MC.',
+  floor:'The optimum is below the ₹'+PMIN+' floor, so price is set at the floor.'};
+ $('mrMcCheck').innerHTML='<b>MR = MC check:</b> '+msg[o.status]+' <br><b>Cross-check:</b> a ₹1-step search over ₹'+PMIN+'–₹'+PMAX+' gives '+fmt(o.grid.p)+' '+(Math.abs(o.grid.p-o.price)<=1?'✓ matches the formula.':'(differs slightly from the formula due to rounding).');
+ charts(m,cur,o);
+ const rd=regression();
+ plot('forecastChart',{x0:200,x1:450,y0:650,y1:1250,xf:fmt,yf:integer,lines:[{n:'Illustrative observations',c:'#b99a5b',pts:regressionData},{n:'OLS regression line',c:'#006241',pts:[[200,rd.predict(200)],[450,rd.predict(450)]]}],marks:[{x:p*(1+v.forecastChange/100),y:regForecast,c:'#4b7bb5',n:'Regression forecast'}]});
+ plot('lracChart',{x0:300,x1:1800,y0:70,y1:160,xf:integer,yf:fmt,lines:[{n:'Illustrative LRAC',c:'#006241',pts:Array.from({length:31},(_,i)=>{const q=300+i*50;return[q,lrac(q)]})}],marks:[{x:1000,y:80,c:'#b99a5b',n:'MES = 1,000'}]});
+}
+
+/* ---------- Game theory ---------- */
+const PAY={hold:{hold:[70,70],cut:[35,85]},cut:{hold:[85,35],cut:[45,45]}},MV=['hold','cut'];
+function game(){
+ const a=$('ourMove').value,b=$('theirMove').value,v=PAY[a][b],rounds=+$('gameRounds').value,discount=.95;
+ $('ourPayoff').textContent=v[0];$('theirPayoff').textContent=v[1];$('gameOutcome').textContent=a==='cut'&&b==='cut'?'Mutual price war':a===b?'Mutual restraint':'One firm undercuts';
+ const factor=Array.from({length:rounds},(_,i)=>discount**i).reduce((s,x)=>s+x,0);
+ $('ourCumulative').textContent=(v[0]*factor).toFixed(1);$('theirCumulative').textContent=(v[1]*factor).toFixed(1);$('roundCount').textContent=rounds+' (5% discount/round)';$('gameRoundsOut').textContent=rounds;
+ const ne=[];MV.forEach(x=>MV.forEach(y=>{if(MV.every(x2=>PAY[x2][y][0]<=PAY[x][y][0])&&MV.every(y2=>PAY[x][y2][1]<=PAY[x][y][1]))ne.push([x,y])}));
+ $('nashNote').innerHTML='<b>Nash equilibrium:</b> '+(ne.length?ne.map(([x,y])=>'Starbucks '+x+', rival '+y+' → ('+PAY[x][y]+')').join('; '):'none in pure strategies')+'. Mutual restraint (70, 70) beats it for both firms, yet each is tempted to undercut: a prisoner’s dilemma.';
+}
+
+/* ---------- Decision log ---------- */
+function renderLogs(){$('logEntries').innerHTML=logs.map((l,i)=>`<div class="logrow"><b>${i+1}. ${esc(l.type)}</b><br>${esc(l.reason)}<br><small>${esc(l.adj)} Price: ${fmt(+l.price||REF)} · Modelled weekly profit: ${l.profit==null?'not recorded':fmt(+l.profit)}${l.opt?' · Formula optimum: '+fmt(+l.opt):''}</small></div>`).join('')}
+function download(){
+ const t=['STARBUCKS INDIA — DECISION LOG','Managerial Economics Simulation','',...logs.flatMap((l,i)=>[`${i+1}. ${l.type}`,`Decision: ${l.reason}`,`Reasoning / context: ${l.adj}`,`Price: ${fmt(+l.price||REF)}`,`Modelled weekly profit: ${l.profit==null?'Not recorded':fmt(+l.profit)}`,''])].join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download='Starbucks_India_Decision_Log.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+const loadValues=o=>{ids.forEach(id=>{$(id).value=o[id]!==undefined?o[id]:DEF[id];label(id)});schedule()};
+
+/* ---------- Wiring ---------- */
+ids.forEach(id=>{label(id);$(id).addEventListener('input',()=>{label(id);schedule()})});
+['ourMove','theirMove','gameRounds'].forEach(id=>$(id).addEventListener('input',game));
+ $('randomShockEnabled').addEventListener('change',()=>{const on=$('randomShockEnabled').checked;$('risk').disabled=!on;if(!on){$('risk').value=0;label('risk')}schedule()});
+ $('generateShock').addEventListener('click',()=>{if(!$('randomShockEnabled').checked){$('randomShockEnabled').checked=true;$('risk').disabled=false}const shock=Math.floor(Math.random()*51)-25;$('risk').value=shock;label('risk');schedule()});
+$('riskAppetite').addEventListener('change',schedule);
+$('applyOptimum').addEventListener('click',()=>{$('price').value=Math.round(latest.price);label('price');schedule()});
+$('applySegments').addEventListener('click',()=>{$('premiumPrice').value=latest.pp;$('budgetPrice').value=latest.pb;label('premiumPrice');label('budgetPrice');schedule()});
+$('roundType').addEventListener('change',e=>loadValues(PRESET[e.target.value]||{}));
+$('saveRound').addEventListener('click',()=>{
+ const type=$('roundType').value,adj={'Cost shock':'Input costs increased by 15%; review operating costs before changing menu prices.','Rival response':'Rival price reduced by 10%; review relative price and customer retention.','Price war':'Both firms cut prices by 10%; compare volume gains with lower margins.'}[type]||'Baseline conditions recorded.';
+ logs.push({type,reason:$('roundReason').value.trim()||'No reasoning entered',adj,price:latest.cur.p,profit:latest.cur.profit,opt:latest.price});save();renderLogs();$('log').scrollIntoView({behavior:'smooth',block:'start'});
+});
+$('resetAll').addEventListener('click',()=>{$('roundType').value='Baseline';loadValues({})});
+$('downloadLog').addEventListener('click',download);
+$('restoreLog').addEventListener('click',()=>{logs=sampleLogs.slice();save();renderLogs()});
+ $('runValidation').addEventListener('click',runValidation);
+addEventListener('resize',schedule);
+
+
+/* ---------- Built-in validation ---------- */
+function runValidation(){
+ const scenarios=[
+  {name:'Low demand / low price',price:220,demandShift:70,supplyShift:100,capacity:1000},
+  {name:'Base case',price:367,demandShift:100,supplyShift:100,capacity:1000},
+  {name:'High demand / constrained capacity',price:480,demandShift:140,supplyShift:110,capacity:500}
+ ];
+ const rows=scenarios.map(s=>{
+   const K=1000*s.demandShift/100*(100/s.supplyShift)**.12*REF**(12/10),e=1.2,c=95*(s.supplyShift/100),F=55000;
+   const qd=p=>K*p**-e,cap=s.capacity,pc=(K/cap)**(1/e),eq=Math.max(c,pc),q=Math.min(qd(eq),cap),profit=eq*q-F-c*q;
+   return `<li><b>${s.name}:</b> equilibrium price ${fmt(eq)}, quantity ${integer(q)}, profit ${fmt(profit)}.</li>`;
+ });
+ const tests=[
+  ['Demand falls when price rises',1000*367**-1.2 > 1000*400**-1.2],
+  ['MP = AP at 160 staff-hours',Math.abs((4+.16*160-.00075*160**2)-(4+.08*160-.00025*160**2))<1e-9],
+  ['LRAC minimum occurs at 1,000 drinks',80+.00008*(1000-1000)**2===80],
+  ['Capacity never exceeded in served quantity',build().at(+$('price').value).q<=build().cap]
+ ];
+ $('validationResults').innerHTML='<b>Three scenario checks</b><ol>'+rows.join('')+'</ol><b>Formula and boundary checks</b><ul>'+tests.map(t=>`<li>${t[1]?'PASS':'CHECK'} — ${t[0]}</li>`).join('')+'</ul><small>These automated checks verify selected model properties. They do not establish empirical accuracy. The first-time-user usability test must be completed and documented separately.</small>';
+}
+
+/* ---------- Navigation and progress ---------- */
+const steps=[...document.querySelectorAll('.step')],nav=$('nav');
+const btns=steps.map((s,i)=>{const b=document.createElement('button');b.className='nav';b.textContent=(i<12?(i+1)+'. ':'')+s.querySelector('h2').textContent;b.onclick=()=>s.scrollIntoView({behavior:'smooth',block:'start'});nav.appendChild(b);return b});
+const mark=i=>{btns.forEach((b,j)=>b.classList.toggle('active',i===j));$('progressBar').style.width=(i+1)/steps.length*100+'%';$('progressText').textContent=(i<12?'STEP '+(i+1)+' OF 12':'FINAL ROUND & LOG')};
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)mark(steps.indexOf(e.target))}),{rootMargin:'-25% 0px -65% 0px'});
+steps.forEach(s=>io.observe(s));mark(0);
+update();game();renderLogs();
+})();
+</script>
+</body>
+</html>
